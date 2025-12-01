@@ -1,6 +1,6 @@
 
 from src.load_data import load_dataset
-from src.eda import run_eda
+from src.eda import run_eda, top_fare_features
 from src.constants import DATA_RAW_PATH
 
 def main():
@@ -14,6 +14,9 @@ def main():
     
      # Step 2: Run full EDA (all steps inside eda.py)
     run_eda(df)
+
+    top_features = top_fare_features(df, target='price', top_n=5)
+    print(f"Top features selected for report: {top_features}")
 
 if __name__ == "__main__":
     main()

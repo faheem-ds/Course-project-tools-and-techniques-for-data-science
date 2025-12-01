@@ -8,9 +8,10 @@ def summarize_numeric(df: pd.DataFrame):
     print("\n[EDA] Numeric summary:")
     print(df.describe())
 
-def summarize_categorical(df: pd.DataFrame):
+def summarize_categorical(df: pd.DataFrame, cat_cols=None):
     """Print counts for categorical columns."""
-    cat_cols = df.select_dtypes(include='object').columns
+    if cat_cols is None:
+        cat_cols = df.select_dtypes(include='object').columns.tolist()
     print("\n[EDA] Categorical value counts:")
     for col in cat_cols:
         print(f"\nColumn: {col}")
@@ -56,7 +57,7 @@ def correlation_heatmap(df: pd.DataFrame, numeric_cols=None, save_path="outputs/
     plt.close()
     print(f"[EDA] Correlation heatmap saved to {save_path}")
 
-def time_based_analysis(df: pd.DataFrame, time_col='pickup_time', save_dir="outputs/figures"):
+def time_based_analysis(df: pd.DataFrame, time_col='datetime', save_dir="outputs/figures"):
     """Generate plots by hour, day of week."""
     if time_col not in df.columns:
         print(f"[EDA] Column '{time_col}' not found. Skipping time-based analysis.")
@@ -72,6 +73,7 @@ def time_based_analysis(df: pd.DataFrame, time_col='pickup_time', save_dir="outp
     plt.title("Trips by Hour")
     plt.xlabel("Hour")
     plt.ylabel("Number of Trips")
+    os.makedirs(save_dir, exist_ok=True)
     plt.savefig(os.path.join(save_dir, "trips_by_hour.png"), bbox_inches='tight')
     plt.close()
     
@@ -100,8 +102,44 @@ def run_eda(df: pd.DataFrame):
     - Time-based analysis
     """
     summarize_numeric(df)
-    summarize_categorical(df)
+    # Include meaningful categorical features
+    summarize_categorical(df, cat_cols=['cab_type', 'product_id'])
     plot_missing_values(df)
     plot_numeric_distributions(df)
     correlation_heatmap(df)
-    time_based_analysis(df)
+    time_based_analysis(df, time_col='datetime')
+
+
+def top_fare_features(df, target='price', top_n=5, save_dir="outputs/figures/top_features"):
+    """
+    Identify top numeric features correlated with the target and save distribution plots.
+    """
+    os.makedirs(save_dir, exist_ok=True)
+    
+    numeric_cols = df.select_dtypes(include='number').columns.tolist()
+    
+    if target not in numeric_cols:
+        print(f"[ERROR] Target column '{target}' not found in numeric columns.")
+        return
+    
+    corr = df[numeric_cols].corr()[target].abs().sort_values(ascending=False)
+    
+    top_features = corr.drop(target).head(top_n).index.tolist()
+    
+    print(f"[INFO] Top features correlated with {target}: {top_features}")
+    
+    plot_cols = [target] + top_features
+    
+    for col in plot_cols:
+        plt.figure(figsize=(8,4))
+        sns.histplot(df[col].dropna(), bins=50, kde=True)
+        plt.title(f"Distribution of {col}")
+        plt.xlabel(col)
+        plt.ylabel("Frequency")
+        plt.tight_layout()
+        file_path = os.path.join(save_dir, f"{col}_distribution.png")
+        plt.savefig(file_path)
+        plt.close()
+        print(f"[INFO] Distribution plot saved: {file_path}")
+    
+    return top_features
