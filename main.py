@@ -1,6 +1,7 @@
 
 from src.load_data import load_dataset
 from src.eda import run_eda, top_fare_features
+from src.cleaning import wrangle_data
 from src.constants import DATA_RAW_PATH
 
 def main():
@@ -17,6 +18,9 @@ def main():
 
     top_features = top_fare_features(df, target='price', top_n=5)
     print(f"Top features selected for report: {top_features}")
+
+    #Step 3: Data wrangling/cleansing
+    df = wrangle_data(df)
 
 if __name__ == "__main__":
     main()
