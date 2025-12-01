@@ -121,6 +121,13 @@ def clean_data(df):
     except Exception as e:
         print(f"[WARNING] Could not generate charts automatically: {e}")
 
+    # Run ML model after saving cleaned CSV
+    try:
+        from src.model import run_ml_model
+        run_ml_model(CLEANED_DATA_PATH)
+    except Exception as e:
+        print(f"[WARNING] Could not run ML model automatically: {e}")
+
     return df
 
 
