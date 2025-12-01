@@ -1,4 +1,5 @@
 
+import utils.session
 from src.load_data import load_dataset
 from src.eda import run_eda, top_fare_features
 from src.cleaning import wrangle_data
