@@ -4,7 +4,7 @@
 This project analyzes Uber and Lyft ride data for Boston, MA, to extract insights and build predictive models. The goal is to understand ride patterns, explore trends, and potentially predict demand or pricing using Python-based data analysis. This project will help in having hand-on-experience of data loading, eda, cleaning, visualizing and used that cleaned data in ML modeling.
 
 ## Project Structure
-
+```
 Course_project_Tools_and_Techniques/
 │
 ├─ .venv/                # Virtual environment (ignored in Git)
@@ -16,6 +16,7 @@ Course_project_Tools_and_Techniques/
 ├─ .gitignore
 ├─ requirements.txt
 ├─ README.md
+```
 
 - data/ → Stores Uber/Lyft CSV datasets
 - src/ → Python scripts for analysis
@@ -38,7 +39,7 @@ pip install -r requirements.txt
 All analysis is done using Python files in the src/ folder.
 To run the main script:
 
-python src/main.py
+python main.py
 
 ## Dependencies
 - pandas
@@ -58,4 +59,5 @@ All dependencies are listed in requirements.txt for reproducibility.
 Faheem
 - GitHub: https://github.com/faheem-ds
 - Email: msds25016@itu.edu.pk
+
 
