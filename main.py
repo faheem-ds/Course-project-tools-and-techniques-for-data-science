@@ -13,7 +13,7 @@ def main():
         print("[ERROR] Dataset could not be loaded. Exiting.")
         return
     
-     # Step 2: Run full EDA (all steps inside eda.py)
+    # Step 2: Run full EDA (all steps inside eda.py)
     run_eda(df)
 
     top_features = top_fare_features(df, target='price', top_n=5)
