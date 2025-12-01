@@ -9,6 +9,8 @@ import joblib
 import os
 
 def run_ml_model(cleaned_csv_path="data/cleaned/cleaned_uber_lyft.csv"):
+    import matplotlib.pyplot as plt
+    import numpy as np
     # Load cleaned data
     df = pd.read_csv(cleaned_csv_path)
 
@@ -17,7 +19,6 @@ def run_ml_model(cleaned_csv_path="data/cleaned/cleaned_uber_lyft.csv"):
     # -----------------------------
     features = ["distance", "surge_multiplier", "hour", "weekday", "visibility", "temperature"]
     target = "price"
-
     X = df[features]
     y = df[target]
 
@@ -71,5 +72,47 @@ def run_ml_model(cleaned_csv_path="data/cleaned/cleaned_uber_lyft.csv"):
     joblib.dump(scaler, "outputs/models/scaler.pkl")
 
     print("\n[INFO] Models and scaler saved in outputs/models/")
+
+    # -----------------------------
+    # 8. Model Evaluation Visuals
+    # -----------------------------
+    os.makedirs("outputs/figures/model_eval", exist_ok=True)
+
+    # Predicted vs Actual (Linear Regression)
+    plt.figure(figsize=(7,7))
+    plt.scatter(y_test, y_pred_lr, alpha=0.3, color='royalblue')
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2)
+    plt.xlabel('Actual Price')
+    plt.ylabel('Predicted Price')
+    plt.title('Linear Regression: Actual vs Predicted')
+    plt.tight_layout()
+    plt.savefig('outputs/figures/model_eval/lr_actual_vs_pred.png')
+    plt.close()
+
+    # Residuals Plot (Linear Regression)
+    residuals_lr = y_test - y_pred_lr
+    plt.figure(figsize=(7,5))
+    plt.scatter(y_pred_lr, residuals_lr, alpha=0.3, color='darkorange')
+    plt.axhline(0, color='red', linestyle='--')
+    plt.xlabel('Predicted Price')
+    plt.ylabel('Residuals')
+    plt.title('Linear Regression: Residuals')
+    plt.tight_layout()
+    plt.savefig('outputs/figures/model_eval/lr_residuals.png')
+    plt.close()
+
+    # Feature Importance (Random Forest)
+    importances = rf_model.feature_importances_
+    feature_names = X.columns
+    indices = np.argsort(importances)[::-1]
+    plt.figure(figsize=(8,5))
+    plt.title('Random Forest Feature Importances')
+    plt.bar(range(len(importances)), importances[indices], align='center', color='seagreen')
+    plt.xticks(range(len(importances)), [feature_names[i] for i in indices], rotation=30)
+    plt.tight_layout()
+    plt.savefig('outputs/figures/model_eval/rf_feature_importance.png')
+    plt.close()
+
+    print("[INFO] Model evaluation plots saved in outputs/figures/model_eval/")
 
     return lr_model, rf_model, scaler

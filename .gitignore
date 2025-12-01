@@ -10,7 +10,6 @@ env/
 .ipynb_checkpoints/
 
 # VS Code settings
-.vscode/
 
 # Data
 *.csv
@@ -20,3 +19,5 @@ datasets/
 # OS files
 .DS_Store
 Thumbs.db
+config.bat
+node_modules
