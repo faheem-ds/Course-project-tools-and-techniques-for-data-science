@@ -1,10 +1,11 @@
-# wrangle.py
+# cleaning.py
 
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
+from src.constants import CLEANED_DATA_PATH
 
 def save_missing_heatmap(df):
     os.makedirs("outputs/figures/wrangling", exist_ok=True)
@@ -96,20 +97,29 @@ def clean_data(df):
     # ----------------------------------------------------
     print("\n[INFO] Creating time-based features...")
 
-    if "timestamp" in df.columns:
-        df["hour"] = df["timestamp"].dt.hour
-        df["day"] = df["timestamp"].dt.day
-        df["month"] = df["timestamp"].dt.month
-        df["weekday"] = df["timestamp"].dt.weekday
+    # Extract time-based features from 'datetime' column (not 'timestamp')
+    if "datetime" in df.columns:
+        df["hour"] = df["datetime"].dt.hour
+        df["day"] = df["datetime"].dt.day
+        df["month"] = df["datetime"].dt.month
+        df["weekday"] = df["datetime"].dt.weekday
 
     print("[INFO] Feature engineering complete.")
 
     # ----------------------------------------------------
     # 6. Save cleaned dataset
     # ----------------------------------------------------
+
     os.makedirs("data/processed", exist_ok=True)
-    df.to_csv("data/processed/cleaned_uber_lyft.csv", index=False)
-    print("\n[SAVED] Cleaned dataset saved at: data/processed/cleaned_uber_lyft.csv")
+    df.to_csv(CLEANED_DATA_PATH, index=False)
+    print(f"\n[SAVED] Cleaned dataset saved at: {CLEANED_DATA_PATH}")
+
+    # Run all charts after saving cleaned CSV
+    try:
+        from src.visualize import run_all_charts
+        run_all_charts(CLEANED_DATA_PATH)
+    except Exception as e:
+        print(f"[WARNING] Could not generate charts automatically: {e}")
 
     return df
 
